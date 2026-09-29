@@ -1,5 +1,3 @@
-# Realtek-AirPort-Family
-Realtek Wi-Fi drivers for macOS Mojave through Tahoe, built around Apple’s AirPort networking stack.
 # Realtek AirPort Family for macOS
 
 ### Native-style Realtek Wi-Fi support across generations of macOS.
