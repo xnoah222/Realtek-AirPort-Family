@@ -92,8 +92,8 @@ AWDL support is experimental and is not considered part of the core stability gu
 | Mojave | 10.14 | Realtek88LegacyAirport | ✅ Stable |
 | Catalina | 10.15 | Realtek88LegacyAirport | ✅ Stable |
 | Big Sur | 11.0 – 11.7.11 | Realtek88LegacyAirport | ✅ Stable |
-| Monterey | 12.x | RTL88_Airport21 | ✅ Stable |
-| Ventura | 13.x | AirPort_RTW88 | ✅ Stable |
+| Monterey | 12.7.6 and later | RTL88_Airport21 | ✅ Stable |
+| Ventura | 13.7.7 and later | AirPort_RTW88 | ✅ Stable |
 | Sonoma | 14.x | AirPort_RTW88 | ✅ Stable |
 | Sequoia | 15.x | AirPort_RTW88 | ✅ Stable |
 | Tahoe | 26.x | AirPort_RTW88 | ✅ Stable |
