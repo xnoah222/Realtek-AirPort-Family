@@ -129,8 +129,7 @@ Kernel -> Block
 
 ### OpenCore Configuration Example
 
-
-![IOSkywalkFamily Kernel Block](Images/IOSkywalkFamily-Block.png)
+Images![IOSkywalkFamily Kernel Block](Images/IOSkywalkFamily-Block.png)
 
 ---
 
