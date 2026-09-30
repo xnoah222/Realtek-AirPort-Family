@@ -1,226 +1,251 @@
 # Realtek AirPort Family for macOS
 
-### Native-style Realtek Wi-Fi support across generations of macOS.
+Native-style Realtek Wi-Fi support for macOS.
 
-Realtek AirPort Family is a collection of Wi-Fi drivers designed to bring selected Realtek RTL88xx wireless adapters into Apple's AirPort networking stack.
+**Realtek AirPort Family** provides native-style AirPort support for selected Realtek PCIe Wi-Fi adapters across multiple generations of macOS.
 
-From **macOS Mojave to macOS Tahoe**, the project provides different drivers adapted to each generation of Apple's Wi-Fi frameworks instead of forcing a single implementation across incompatible networking stacks.
+The project currently includes two drivers:
 
-One family. Three drivers. Twelve years of macOS.
+- **Realtek88LegacyAirport** — macOS Mojave through Big Sur
+- **AirPort_RTW88** — macOS Ventura through Tahoe
 
----
-
-## The Driver Family
-
-### Realtek88LegacyAirport
-
-**macOS Mojave 10.14 → macOS Big Sur 11.7.11**
-
-The legacy branch of Realtek AirPort Family.
-
-Designed around the classic AirPort / IO80211 networking stack used by older versions of macOS.
-
-**Status:** Stable
-
-- Wi-Fi scanning
-- Association and authentication
-- 2.4 GHz networks
-- 5 GHz networks
-- Network switching
-- Sleep / Wake
-- Sustained network traffic
-
-**Known limitations**
-
-- Hibernation is not supported
-- AWDL is not supported
-
----
-
-### RTL88_Airport21
-
-**macOS Monterey 12**
-
-A dedicated driver for Darwin 21 and the Monterey generation of Apple's AirPort stack.
-
-Rather than extending either the Legacy or Modern driver beyond the environment they were designed for, Monterey receives its own implementation.
-
-**Status:** Stable
-
-- Wi-Fi scanning
-- Association and authentication
-- 2.4 GHz networks
-- 5 GHz networks
-- Network switching
-- Sleep / Wake
-- Hibernation support
-- Sustained network traffic
-
-AWDL is not currently guaranteed.
-
----
-
-### AirPort_RTW88
-
-**macOS Ventura 13 → macOS Tahoe 26**
-
-The modern branch of Realtek AirPort Family and the continuation of the original AirPort_RTW88 project.
-
-Built for newer generations of Apple's Wi-Fi stack, with a focus on stability under everyday use and sustained network traffic.
-
-**Status:** Stable
-
-- Wi-Fi scanning
-- Association and authentication
-- 2.4 GHz networks
-- 5 GHz networks
-- Network switching
-- Sleep / Wake
-- Hibernation support
-- Sustained network traffic
-
-AWDL support is experimental and is not considered part of the core stability guarantee.
-
----
-
-## macOS Compatibility
-
-| macOS | Version | Driver | Status |
-| --- | --- | --- | --- |
-| Mojave | 10.14 | Realtek88LegacyAirport | ✅ Stable |
-| Catalina | 10.15 | Realtek88LegacyAirport | ✅ Stable |
-| Big Sur | 11.0 – 11.7.11 | Realtek88LegacyAirport | ✅ Stable |
-| Monterey | 12.7.6 and later | RTL88_Airport21 | ✅ Stable |
-| Ventura | 13.7.7 and later | AirPort_RTW88 | ✅ Stable |
-| Sonoma | 14.x | AirPort_RTW88 | ✅ Stable |
-| Sequoia | 15.x | AirPort_RTW88 | ✅ Stable |
-| Tahoe | 26.x | AirPort_RTW88 | ✅ Stable |
+> **Realtek Wi-Fi. From Mojave to Tahoe.**
 
 ---
 
 ## Supported Hardware
 
-Realtek AirPort Family currently targets:
+Currently supported PCIe adapters:
 
-- **Realtek RTL8822BE**
-- **Realtek RTL8822CE**
-- **Realtek RTL8821CE**
+- Realtek RTL8822BE
+- Realtek RTL8822CE
+- Realtek RTL8821CE
 
-PCIe devices only.
-
-USB and SDIO Realtek Wi-Fi adapters are not supported.
+> [!NOTE]
+> USB and SDIO Realtek Wi-Fi adapters are not supported.
 
 ---
 
-## Why three drivers?
+## Compatibility
 
-Apple's Wi-Fi architecture changed substantially across macOS generations.
+| macOS | Driver | Status |
+|---|---|---|
+| Mojave 10.14 | Realtek88LegacyAirport | ✅ Supported |
+| Catalina 10.15 | Realtek88LegacyAirport | ✅ Supported |
+| Big Sur 11 | Realtek88LegacyAirport | ✅ Supported |
+| Monterey 12 | — | ❌ Not supported |
+| Ventura 13.7.7 – 13.7.8 | AirPort_RTW88 | ✅ Supported |
+| Sonoma 14.4+ | AirPort_RTW88 | ✅ Supported |
+| Sequoia 15 | AirPort_RTW88 | ✅ Supported |
+| Tahoe 26 | AirPort_RTW88 | ✅ Supported |
 
-Trying to maintain one increasingly patched driver for every version of macOS would introduce unnecessary complexity and compromise stability.
+> [!IMPORTANT]
+> macOS Monterey is currently not supported.
 
-Realtek AirPort Family instead uses three purpose-built implementations:
+---
+
+# Installation
+
+## macOS Mojave – Big Sur
+
+Required:
+
+- `HS80211Family.kext`
+- `Realtek88LegacyAirport.kext`
+
+Copy both kexts to:
 
 ```text
-Mojave ─ Catalina ─ Big Sur
-              │
-     Realtek88LegacyAirport
-
-           Monterey
-              │
-        RTL88_Airport21
-
-Ventura ─ Sonoma ─ Sequoia ─ Tahoe
-              │
-         AirPort_RTW88
+EFI/OC/Kexts/
 ```
 
-Each branch can evolve around the networking architecture it was designed to support while remaining part of the same project.
+and enable them under:
+
+```text
+Kernel -> Add
+```
+
+`HS80211Family.kext` must load before `Realtek88LegacyAirport.kext`.
 
 ---
 
-## Stability
+## macOS Ventura
 
-The primary goal of Realtek AirPort Family is not simply getting a Realtek adapter detected by macOS.
+Required:
 
-A working driver should remain working.
+- `AirPort_RTW88.kext`
 
-Core Wi-Fi functionality is tested around:
+Copy the kext to:
 
-- Extended network usage
+```text
+EFI/OC/Kexts/
+```
+
+and enable it under:
+
+```text
+Kernel -> Add
+```
+
+No legacy Skywalk stack is required on Ventura.
+
+---
+
+## macOS Sonoma – Tahoe
+
+Required:
+
+- `AirPort_RTW88.kext`
+- `IO80211FamilyLegacy.kext`
+- `IOSkywalkFamily.kext`
+- `AMFIPass.kext`
+
+The required dependencies are included in the release package for convenience.
+
+Copy the kexts to:
+
+```text
+EFI/OC/Kexts/
+```
+
+and enable them under:
+
+```text
+Kernel -> Add
+```
+
+### Blocking native IOSkywalkFamily
+
+On macOS Sonoma and newer, the native `IOSkywalkFamily` must be blocked so the legacy `IOSkywalkFamily.kext` can be loaded.
+
+Configure the block under:
+
+```text
+Kernel -> Block
+```
+
+> [!IMPORTANT]
+> Blocking the native IOSkywalkFamily is required on Sonoma and newer. An incorrect configuration may prevent the Wi-Fi stack from loading.
+
+### OpenCore Configuration Example
+
+
+![IOSkywalkFamily Kernel Block](Images/IOSkywalkFamily-Block.png)
+
+---
+
+# Current Status
+
+Both drivers provide stable core Wi-Fi functionality on their supported macOS versions.
+
+Supported core functionality includes:
+
+- Wi-Fi scanning
+- Network association
+- 2.4 GHz and 5 GHz networks
+- Network switching
 - Sustained network traffic
-- Repeated network switching
-- 2.4 GHz ↔ 5 GHz switching
-- Disconnect / reconnect cycles
-- Sleep / Wake
-- Connection recovery
 
-Experimental functionality such as AWDL is kept separate from the stability status of normal Wi-Fi operation.
+AirPort_RTW88 also supports sleep/wake recovery.
 
 ---
 
-## AWDL, AirDrop and Continuity
+## AWDL / AirDrop
 
-AWDL is **not currently guaranteed across Realtek AirPort Family**.
+AWDL support in **AirPort_RTW88** is currently experimental.
 
-Experimental AWDL functionality may be present in some driver and macOS combinations, but it should not currently be considered a supported feature.
+Partial AWDL functionality exists, but AirDrop and other AWDL-dependent features should not currently be considered supported.
 
-The absence or instability of AWDL does not affect the supported status of standard Wi-Fi connectivity.
+**Realtek88LegacyAirport does not support AWDL.**
 
----
-
-## Installation
-
-Installation requirements depend on the macOS generation being used.
-
-Some versions of macOS require additional networking components that are **not distributed as part of Realtek AirPort Family**.
-
-Detailed installation instructions and required upstream dependencies are provided with each release.
-
-Do not mix drivers intended for different macOS generations.
+AWDL is separate from the core Wi-Fi stability status of AirPort_RTW88.
 
 ---
 
-## Source Code
+# Previous AirPort_RTW88 Releases
 
-Source code corresponding to public releases is provided separately with the project releases.
+AirPort_RTW88 previously existed as a standalone experimental project.
 
-Realtek AirPort Family contains and adapts work from multiple open-source projects. Original copyright and licensing notices are preserved where applicable.
+The releases published in the original repository were early development builds and contained stability and connectivity issues.
 
-See the included license and source documentation for additional information.
+Those releases are now **deprecated and do not represent the current state of AirPort_RTW88**.
 
----
+With the migration to Realtek AirPort Family, the AirPort_RTW88 version number has been reset.
 
-## Credits
+The first AirPort_RTW88 release distributed as part of this project starts again at:
 
-Realtek AirPort Family would not exist without the work of the open-source wireless and Hackintosh communities.
+**1.0.0**
 
-Special thanks to:
-
-- **OpenIntelWireless / AirportItlwm** — research, architecture and implementation reference for integrating third-party Wi-Fi hardware with Apple's AirPort stack.
-- **Linux rtw88 developers** — Realtek RTL88xx hardware support and documentation.
-- **Dortania / OpenCore Legacy Patcher** — legacy macOS networking research and infrastructure.
-- Everyone testing Realtek hardware across different Macs, Hackintoshes and macOS versions.
+This release should not be confused with the historical AirPort_RTW88 1.0.0 release from the deprecated repository.
 
 ---
 
-## Project History
+# Included Dependencies
 
-Realtek AirPort Family grew out of **AirPort_RTW88**, originally created to bring Realtek RTL88xx PCIe Wi-Fi hardware to modern versions of macOS.
+Some external kexts are included in the release packages to make installation easier.
 
-What started as a single experimental driver eventually became a larger effort to support multiple generations of Apple's networking stack.
+These components are **not developed or owned by Realtek AirPort Family** and remain the work of their respective developers and projects.
 
-AirPort_RTW88 now lives here as the Modern branch of a broader driver family.
+### Mojave – Big Sur
+
+- `HS80211Family.kext`
+
+### Sonoma – Tahoe
+
+- `IO80211FamilyLegacy.kext`
+- `IOSkywalkFamily.kext`
+- `AMFIPass.kext`
+
+Original licenses, notices and credits should be preserved.
 
 ---
 
-## License
+# Credits
 
-Realtek AirPort Family is distributed under the **GNU General Public License v2.0**.
+Realtek AirPort Family would not exist without the work and research of several open-source projects.
 
-Individual incorporated components remain subject to their respective copyright and licensing terms.
+### Driver Development
+
+- **Linux rtw88** — Realtek Wi-Fi driver used as the main reference and basis for Realtek hardware support.
+- **OpenIntelWireless / AirportItlwm** — major reference for implementing native AirPort integration on macOS.
+- **MacKernelSDK** — kernel development resources used for macOS driver development.
+
+### External Kexts
+
+- **HS80211Family.kext** — from the `sXmpwn/atheros-ke` project.
+- **IO80211FamilyLegacy.kext / IOSkywalkFamily.kext** — legacy Wi-Fi stack distributed through `Edwardwich/BCM-WIFI-Sequoia`.
+- **AMFIPass.kext** — distributed through `kaoskinkae/AMFIPass`.
+
+All credit for these external components belongs to their respective developers and contributors.
 
 ---
 
-**Realtek AirPort Family for macOS**
+# Source Code
 
-*Realtek Wi-Fi. From Mojave to Tahoe.*
+Source code for Realtek AirPort Family is provided with the project.
+
+The source distribution preserves applicable copyright notices and licenses from the projects on which the drivers are based.
+
+---
+
+# Disclaimer
+
+Realtek AirPort Family is an independent community project.
+
+It is not affiliated with, endorsed by, or supported by Apple Inc. or Realtek Semiconductor Corp.
+
+Hackintosh configurations can vary significantly between systems.
+
+**Always keep a working EFI backup before modifying kexts or your OpenCore configuration.**
+
+---
+
+# License
+
+See the included `LICENSE` file and individual source files for applicable licensing information.
+
+Third-party components retain their respective licenses and copyright notices.
+
+---
+
+**Realtek Wi-Fi. From Mojave to Tahoe.**
