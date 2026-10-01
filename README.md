@@ -6,8 +6,8 @@ Native-style Realtek Wi-Fi support for macOS.
 
 The project currently includes two drivers:
 
-- **Realtek88LegacyAirport** — macOS Mojave through Big Sur
-- **AirPort_RTW88** — macOS Ventura through Tahoe
+- **Realtek88LegacyAirport** — macOS Mojave through Big Sur (Realtek88LegacyAirport.kext + HS80211Family.kext)
+- **AirPort_RTW88** — macOS Ventura through Tahoe (On Sonoma and Later you need to use Legacy Stack)
 
 > **Realtek Wi-Fi. From Mojave to Tahoe.**
 
