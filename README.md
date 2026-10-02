@@ -171,9 +171,9 @@ Those releases are now **deprecated and do not represent the current state of Ai
 
 With the migration to Realtek AirPort Family, the AirPort_RTW88 version number has been reset.
 
-The first AirPort_RTW88 release distributed as part of this project starts again at:
+The first AirPort_RTW88 release distributed as part of this project starts at:
 
-**1.0.0**
+**2.0.0**
 
 This release should not be confused with the historical AirPort_RTW88 1.0.0 release from the deprecated repository.
 
