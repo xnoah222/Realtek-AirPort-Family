@@ -1,0 +1,82 @@
+# One-shot maintenance workflow. It deletes itself after updating the archives.
+name: Update source ZIP licensing notices
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/update-source-zip-notices.yml"
+      - "LICENSE"
+      - "THIRD_PARTY_NOTICES.md"
+      - "ORIGINAL_WORK_NOTICE.md"
+      - "LICENSES/LICENCE.rtlwifi_firmware.txt"
+      - "AirPort_RTW88-Source.zip"
+      - "Realtek88LegacyAirport-Source.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  update-source-zips:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Inject licensing notices into source ZIPs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          update_zip() {
+            local zip_file="$1"
+            local top="$2"
+            local tmp
+            tmp="$(mktemp -d)"
+
+            mkdir -p "$tmp/$top/Feixiao/firmware"
+
+            cp LICENSE "$tmp/$top/PROJECT_LICENSE.txt"
+            cp THIRD_PARTY_NOTICES.md "$tmp/$top/THIRD_PARTY_NOTICES.md"
+            cp ORIGINAL_WORK_NOTICE.md "$tmp/$top/ORIGINAL_WORK_NOTICE.md"
+            cp LICENSES/LICENCE.rtlwifi_firmware.txt \
+              "$tmp/$top/Feixiao/firmware/LICENCE.rtlwifi_firmware.txt"
+
+            (
+              cd "$tmp"
+              zip -q -u "$GITHUB_WORKSPACE/$zip_file" \
+                "$top/PROJECT_LICENSE.txt" \
+                "$top/THIRD_PARTY_NOTICES.md" \
+                "$top/ORIGINAL_WORK_NOTICE.md" \
+                "$top/Feixiao/firmware/LICENCE.rtlwifi_firmware.txt"
+            )
+
+            rm -rf "$tmp"
+            unzip -tq "$zip_file"
+          }
+
+          update_zip "AirPort_RTW88-Source.zip" "AirPort_RTW88"
+          update_zip "Realtek88LegacyAirport-Source.zip" "Realtek88LegacyAirport"
+
+      - name: Commit updated archives and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add AirPort_RTW88-Source.zip Realtek88LegacyAirport-Source.zip
+          git rm .github/workflows/update-source-zip-notices.yml
+
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+
+          git commit -m "Update source ZIP licensing notices"
+          git push origin HEAD:main
