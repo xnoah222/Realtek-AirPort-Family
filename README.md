@@ -129,7 +129,7 @@ Kernel -> Block
 
 ### OpenCore Configuration Example
 
-Images![IOSkywalkFamily Kernel Block](Images/Kernel-Block.png)
+![IOSkywalkFamily Kernel Block](Images/Kernel-Block.png)
 
 ---
 
@@ -207,6 +207,7 @@ Realtek AirPort Family would not exist without the work and research of several 
 
 - **Linux rtw88** — Realtek Wi-Fi driver used as the main reference and basis for Realtek hardware support.
 - **OpenIntelWireless / AirportItlwm** — major reference for implementing native AirPort integration on macOS.
+- **Feixiao** — upstream macOS Realtek driver material used by this project.
 - **MacKernelSDK** — kernel development resources used for macOS driver development.
 
 ### External Kexts
@@ -241,9 +242,18 @@ Hackintosh configurations can vary significantly between systems.
 
 # License
 
-See the included `LICENSE` file and individual source files for applicable licensing information.
+Realtek AirPort Family is a **mixed-license** repository.
 
-Third-party components retain their respective licenses and copyright notices.
+Original Project Work for **AirPort_RTW88** and **Realtek88LegacyAirport** is licensed under the custom **Realtek AirPort Family Project License 1.0**, but only where the project has the legal right to apply it. The license permits use, modification, redistribution and commercial distribution while requiring modified distributions that rely on Covered Original Project Work to use a distinct project identity rather than presenting themselves as official AirPort_RTW88 or Realtek88LegacyAirport releases.
+
+Third-party code and data are **not relicensed**. Linux/rtw88, Feixiao-derived material, AirportItlwm/itlwm material, Apple/MacKernelSDK material, Realtek firmware and other third-party components retain their own notices and license terms.
+
+See:
+
+- `LICENSE` — Realtek AirPort Family Project License 1.0
+- `THIRD_PARTY_NOTICES.md` — third-party license map
+- `ORIGINAL_WORK_NOTICE.md` — scope of the project's original work
+- individual source-file headers and license files inside the source archives
 
 ---
 
