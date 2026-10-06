@@ -1,0 +1,172 @@
+diff --git a/Scripts/compatibility_checker.py b/Scripts/compatibility_checker.py
+index c0b16a8..ec3997d 100644
+--- a/Scripts/compatibility_checker.py
++++ b/Scripts/compatibility_checker.py
+@@ -275,6 +275,9 @@ class CompatibilityChecker:
+                 max_version = "17.99.99"
+             elif device_id in pci_data.AtherosWiFiIDs[8:]:
+                 max_version = "20.99.99"
++            elif device_id in pci_data.RealtekAirPortIDs:
++                min_version, max_version = "18.0.0", "25.99.99"
++                device_props["Unsupported Darwin Majors"] = [21]
+             elif device_id in pci_data.IntelI22XIDs:
+                 min_version = "19.0.0"
+             elif device_id in pci_data.AquantiaAqtionIDs:
+@@ -283,7 +286,7 @@ class CompatibilityChecker:
+             if device_id in set(pci_data.EthernetIDs) | set(pci_data.WirelessUSBIDs):
+                 device_props["Compatibility"] = (max_version, min_version)
+             elif device_id in pci_data.WirelessCardIDs:
+-                if not device_id in pci_data.IntelWiFiIDs and not device_id in pci_data.AtherosWiFiIDs[8:] and not device_id in pci_data.rtw88WiFiIDs:
++                if not device_id in pci_data.IntelWiFiIDs and not device_id in pci_data.AtherosWiFiIDs[8:] and not device_id in pci_data.rtw88WiFiIDs and not device_id in pci_data.RealtekAirPortIDs:
+                     device_props["OCLP Compatibility"] = (ocl_patched_max_version, ocl_patched_min_version)
+                     self.ocl_patched_macos_version = (ocl_patched_max_version, self.ocl_patched_macos_version[-1] if self.ocl_patched_macos_version and self.utils.parse_darwin_version(self.ocl_patched_macos_version[-1]) < self.utils.parse_darwin_version(device_props.get("OCLP Compatibility")[-1]) else device_props.get("OCLP Compatibility")[-1])
+                 device_props["Compatibility"] = (max_version, min_version)
+@@ -303,6 +306,9 @@ class CompatibilityChecker:
+                     print("{}- Continuity Support: \033[1;31mLimited\033[0m (No Continuity features available)".format(" "*6))
+                     print("{}\033[1;93mNote:\033[0m Atheros cards are not recommended for macOS".format(" "*6))
+ 
++            if device_id in pci_data.RealtekAirPortIDs:
++                print("      Realtek AirPort: Monterey unsupported; Sonoma–Tahoe needs legacy stack; no AirDrop")
++
+             if "OCLP Compatibility" in device_props:
+                 print("{}- OCLP Compatibility: {}".format(" "*6, self.show_macos_compatibility(device_props.get("OCLP Compatibility"))))
+ 
+diff --git a/Scripts/datasets/kext_data.py b/Scripts/datasets/kext_data.py
+index 9a5e67d..0b22333 100644
+--- a/Scripts/datasets/kext_data.py
++++ b/Scripts/datasets/kext_data.py
+@@ -208,7 +208,31 @@ kexts = [
+         }
+     ),
+     KextInfo(
+-        name = "Feixiao", 
++        name = "AirPort_RTW88",
++        description = "Realtek PCIe native Wi-Fi (Ventura–Tahoe); no AirDrop",
++        category = "Wi-Fi", min_darwin_version = "22.0.0",
++        max_darwin_version = "25.99.99", allow_force_load = False,
++        conflict_group_id = "RealtekWiFi",
++        github_repo = {"owner": "xnoah222", "repo": "Realtek-AirPort-Family"}
++    ),
++    KextInfo(
++        name = "Realtek88LegacyAirport",
++        description = "Realtek PCIe native Wi-Fi (Mojave–Big Sur)",
++        category = "Wi-Fi", min_darwin_version = "18.0.0",
++        max_darwin_version = "20.99.99", allow_force_load = False,
++        requires_kexts = ["HS80211Family"], conflict_group_id = "RealtekWiFi",
++        github_repo = {"owner": "xnoah222", "repo": "Realtek-AirPort-Family"}
++    ),
++    KextInfo(
++        name = "HS80211Family",
++        description = "High Sierra IO80211 ABI for Realtek88LegacyAirport",
++        category = "Wi-Fi", min_darwin_version = "18.0.0",
++        max_darwin_version = "20.99.99", allow_force_load = False,
++        github_repo = {"owner": "xnoah222", "repo": "Realtek-AirPort-Family"}
++    ),
++    KextInfo(
++        name = "Feixiao",
++        conflict_group_id = "RealtekWiFi",
+         description = "Realtek WLAN (rtw88) driver for macOS",
+         category = "Wi-Fi",
+         min_darwin_version = "20.0.0",
+diff --git a/Scripts/datasets/pci_data.py b/Scripts/datasets/pci_data.py
+index 3dc33bb..3858f61 100644
+--- a/Scripts/datasets/pci_data.py
++++ b/Scripts/datasets/pci_data.py
+@@ -558,6 +558,10 @@ IntelWiFiIDs = [
+     "8086-A370"
+ ]
+ 
++RealtekAirPortIDs = [
++    "10EC-B822", "10EC-C822", "10EC-C82F", "10EC-C821", "10EC-B821"
++]
++
+ rtw88WiFiIDs = [
+     "10EC-B822",
+     "10EC-C822",
+@@ -570,7 +574,7 @@ rtw88WiFiIDs = [
+     "0BDA-8812"
+ ]
+ 
+-WirelessCardIDs = AtherosWiFiIDs + BroadcomWiFiIDs + IntelWiFiIDs + rtw88WiFiIDs
++WirelessCardIDs = AtherosWiFiIDs + BroadcomWiFiIDs + IntelWiFiIDs + rtw88WiFiIDs + RealtekAirPortIDs
+ 
+ AppleIGBIDs = [
+     # AppleIGB.kext
+diff --git a/Scripts/github.py b/Scripts/github.py
+index 0c45c60..500dbf6 100644
+--- a/Scripts/github.py
++++ b/Scripts/github.py
+@@ -123,6 +123,13 @@ class Github:
+             return "".join(random.choices('0123456789', k=9))
+ 
+     def extract_asset_name(self, file_name):
++        # Preserve the underscore in our actual bundle/product name.
++        if file_name.startswith("AirPort_RTW88-Source"):
++            return "AirPort_RTW88-Source"
++        if file_name.startswith("Realtek88LegacyAirport-Source"):
++            return "Realtek88LegacyAirport-Source"
++        if file_name.startswith("AirPort_RTW88-"):
++            return "AirPort_RTW88"
+         end_idx = len(file_name)
+         if "-" in file_name:
+             end_idx = min(file_name.index("-"), end_idx)
+diff --git a/Scripts/hardware_customizer.py b/Scripts/hardware_customizer.py
+index c5620b6..958ce11 100644
+--- a/Scripts/hardware_customizer.py
++++ b/Scripts/hardware_customizer.py
+@@ -61,6 +61,9 @@ class HardwareCustomizer:
+                 except:
+                     is_compatible = False
+ 
++                if int(macos_version.split(".")[0]) in device_props.get("Unsupported Darwin Majors", []):
++                    is_compatible = False
++
+                 if is_compatible:
+                     self.customized_hardware[device_type][device_name] = device_props
+                 else:
+diff --git a/Scripts/kext_maestro.py b/Scripts/kext_maestro.py
+index c5d4a44..3f975e4 100644
+--- a/Scripts/kext_maestro.py
++++ b/Scripts/kext_maestro.py
+@@ -4,6 +4,7 @@ from Scripts.datasets import os_data
+ from Scripts.datasets import pci_data
+ from Scripts.datasets import codec_layouts
+ from Scripts import utils
++from Scripts import realtek_airport
+ import os
+ import shutil
+ 
+@@ -103,6 +104,8 @@ class KextMaestro:
+             return False
+ 
+         kext = self.kexts[index]
++        if kext.name == "AirPort_RTW88":
++            kext.requires_kexts = realtek_airport.selected_kexts(target_darwin_version)[1:]
+         checking = checking or set()
+ 
+         if kext.checked:
+@@ -318,6 +321,8 @@ class KextMaestro:
+                     selected_kexts.append("AirPortAtheros40-Tahoe")
+                 if self.utils.parse_darwin_version(macos_version) > self.utils.parse_darwin_version("20.99.99"):
+                     selected_kexts.append("AMFIPass")
++            elif device_id in pci_data.RealtekAirPortIDs:
++                selected_kexts.extend(realtek_airport.selected_kexts(macos_version))
+             elif device_id in pci_data.rtw88WiFiIDs:
+                 selected_kexts.append("Feixiao")
+             elif device_id in pci_data.IntelI22XIDs:
+diff --git a/Scripts/realtek_airport.py b/Scripts/realtek_airport.py
+new file mode 100644
+index 0000000..4ddcbe5
+--- /dev/null
++++ b/Scripts/realtek_airport.py
+@@ -0,0 +1,10 @@
++"""Selection policy for the PCIe Realtek AirPort drivers (Darwin versions)."""
++def selected_kexts(version):
++    major = int(version.split(".")[0])
++    if 18 <= major <= 20:
++        return ["Realtek88LegacyAirport"]
++    if major == 22:
++        return ["AirPort_RTW88"]
++    if 23 <= major <= 25:
++        return ["AirPort_RTW88", "IO80211FamilyLegacy", "IOSkywalkFamily", "AMFIPass"]
++    return []
