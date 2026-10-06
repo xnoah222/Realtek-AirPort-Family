@@ -8,7 +8,7 @@ git -C OpCore-Simplify checkout $(cat BASE_COMMIT)
 git -C OpCore-Simplify apply /absolute/path/to/realtek-airport.patch
 ```
 
-Run the patched copy normally. Updating/replacing it from upstream can remove this integration.
+Run the patched copy normally. Automatic application self-update is disabled in this pinned preview so it cannot silently remove the integration. Kext downloads still run normally. Updating/replacing the application from upstream requires reapplying a compatible patch.
 
 PCI IDs: 10EC:B822, C822, C82F, C821, B821. USB/SDIO IDs are not mapped to AirPort drivers.
 
