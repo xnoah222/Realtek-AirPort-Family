@@ -1,6 +1,6 @@
-# Realtek AirPort Family 1.0.1 preview
+# Realtek AirPort Family 1.0.1
 
-AirPort_RTW88 2.0.2 and Realtek88LegacyAirport 1.0.1.
+AirPort_RTW88 2.0.1 and Realtek88LegacyAirport 1.0.1.
 
 Changes:
 - PCIe capability registers now use the discovered PCI_EXP capability offset. Previously reads used absolute offsets and writes used 0x100+offset (truncated by the PCI wrapper). This fixes the implementation of CLKREQ/ASPM capability reads and the RTL8821CE completion-timeout workaround.
