@@ -1,19 +1,3 @@
-diff --git a/OpCore-Simplify.py b/OpCore-Simplify.py
-index e446a21..5561ae5 100644
---- a/OpCore-Simplify.py
-+++ b/OpCore-Simplify.py
-@@ -458,7 +458,10 @@ class OCPE:
-                 self.u.request_input("Press Enter to main menu...")
- 
- if __name__ == '__main__':
--    update_flag = updater.Updater().run_update()
-+    # This distribution carries a reviewed Realtek patch not yet in upstream.
-+    # An upstream self-update would silently remove its driver policy.
-+    print("Realtek AirPort preview: pinned Simplify build; self-update is disabled.")
-+    update_flag = False
-     if update_flag:
-         os.execv(sys.executable, ['python3'] + sys.argv)
- 
 diff --git a/Scripts/compatibility_checker.py b/Scripts/compatibility_checker.py
 index c0b16a8..ec3997d 100644
 --- a/Scripts/compatibility_checker.py
@@ -108,14 +92,31 @@ index 3dc33bb..3858f61 100644
  
  AppleIGBIDs = [
      # AppleIGB.kext
+diff --git a/Scripts/gathering_files.py b/Scripts/gathering_files.py
+index 4acc42c..361568b 100644
+--- a/Scripts/gathering_files.py
++++ b/Scripts/gathering_files.py
+@@ -165,7 +165,9 @@ class gatheringFiles:
+ 
+             product_name = product.name if not isinstance(product, dict) else product.get("Name")
+             
+-            if product_name == "AirportItlwm":
++            if product_name in ("AirPort_RTW88", "Realtek88LegacyAirport", "HS80211Family"):
++                product_name = "RealtekAirPortFamily"
++            elif product_name == "AirportItlwm":
+                 version = macos_version[:2]
+                 if all((self.utils.parse_darwin_version("24.0.0") <= self.utils.parse_darwin_version(macos_version), kexts[kext_maestro.kext_data.kext_index_by_name.get("IOSkywalkFamily")].checked, kexts[kext_maestro.kext_data.kext_index_by_name.get("IO80211FamilyLegacy")].checked)):
+                     version = "22"
 diff --git a/Scripts/github.py b/Scripts/github.py
-index 0c45c60..500dbf6 100644
+index 0c45c60..16887c4 100644
 --- a/Scripts/github.py
 +++ b/Scripts/github.py
-@@ -123,6 +123,13 @@ class Github:
+@@ -123,6 +123,15 @@ class Github:
              return "".join(random.choices('0123456789', k=9))
  
      def extract_asset_name(self, file_name):
++        if file_name.startswith("Realtek-AirPort-Family-"):
++            return "RealtekAirPortFamily"
 +        # Preserve the underscore in our actual bundle/product name.
 +        if file_name.startswith("AirPort_RTW88-Source"):
 +            return "AirPort_RTW88-Source"

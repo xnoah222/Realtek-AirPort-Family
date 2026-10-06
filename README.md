@@ -4,7 +4,7 @@ Native-style Realtek Wi-Fi support for macOS.
 
 ## 1.0.1 — Wi-Fi and OpCore Simplify
 
-[Download release](https://github.com/xnoah222/Realtek-AirPort-Family/releases/tag/v1.0.1) · [Changes and validation](RELEASE-NOTES-1.0.1.md) · [OpCore Simplify integration](integration/opcore-simplify/README.md)
+[Download release](https://github.com/xnoah222/Realtek-AirPort-Family/releases/tag/v1.0.1) · [Changes and validation](RELEASE-NOTES-1.0.1.md) · [Proposed upstream OpCore Simplify integration](integration/opcore-simplify/README.md)
 
 The release contains one ZIP with `LegacyAirport`, `Airport_RTW88` and `Sonoma - Tahoe` folders.
 
@@ -143,7 +143,7 @@ Kernel -> Block
 
 # Current Status
 
-Both drivers target core Wi-Fi functionality. The latest preview is compiled and software-tested; physical verification of RTL8822CE/RTL8821CE and the full macOS matrix remains pending.
+Both drivers target core Wi-Fi functionality. This release is compiled and software-tested; physical verification of RTL8822CE/RTL8821CE and the full macOS matrix remains pending.
 
 Supported core functionality includes:
 

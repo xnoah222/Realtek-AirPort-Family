@@ -1,25 +1,12 @@
-# OpCore Simplify integration
+# Proposed upstream OpCore Simplify integration
 
-This is a tested patch for upstream commit in `BASE_COMMIT`, not a claim that upstream has merged support.
+This patch is prepared for the upstream commit in BASE_COMMIT. It has not been merged into the original OpCore Simplify catalog. Publishing a release does not register drivers in that catalog.
 
-```sh
-git clone https://github.com/lzhoang2801/OpCore-Simplify.git
-git -C OpCore-Simplify checkout $(cat BASE_COMMIT)
-git -C OpCore-Simplify apply /absolute/path/to/realtek-airport.patch
-```
-
-Run the patched copy normally. Automatic application self-update is disabled in this pinned preview so it cannot silently remove the integration. Kext downloads still run normally. Updating/replacing the application from upstream requires reapplying a compatible patch.
-
-PCI IDs: 10EC:B822, C822, C82F, C821, B821. USB/SDIO IDs are not mapped to AirPort drivers.
+The contribution adds AirPort_RTW88, Realtek88LegacyAirport and HS80211Family, selects them by Darwin version and PCI IDs, and downloads all three products from the single Realtek-AirPort-Family-1.0.1.zip asset. It does not disable or alter the upstream application updater.
 
 - Darwin 18–20: Realtek88LegacyAirport + HS80211Family.
-- Darwin 21: unavailable (Monterey).
+- Darwin 21: unsupported.
 - Darwin 22: AirPort_RTW88 alone.
-- Darwin 23–25: AirPort_RTW88 + IO80211FamilyLegacy + IOSkywalkFamily + AMFIPass (and its Lilu dependency in Simplify's catalog).
-- Future Darwin versions: not enabled implicitly.
+- Darwin 23–25: AirPort_RTW88 + legacy stack and its dependencies.
 
-The installer retains its existing dependency sort and native IOSkywalkFamily block at MinKernel 23.0.0. The drivers conflict with Feixiao and with each other. Download names retain AirPort_RTW88's underscore; Source ZIPs cannot replace the binary product.
-
-Requires the new release's separately named `AirPort_RTW88-…-RELEASE.zip`, `Realtek88LegacyAirport-…-RELEASE.zip`, and `HS80211Family-…-RELEASE.zip` assets. The old combined 1.0.0 archive does not expose these products to Simplify.
-
-AirDrop/AWDL is unsupported. Runtime confirmation is still needed on RTL8822CE/RTL8821CE and the older macOS versions.
+PCI IDs: 10EC:B822, C822, C82F, C821, B821. AWDL/AirDrop unsupported. CE runtime validation remains pending.
