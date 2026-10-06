@@ -2,6 +2,12 @@
 
 Native-style Realtek Wi-Fi support for macOS.
 
+## 1.0.1 preview — Wi-Fi and OpCore Simplify
+
+[Download the preview](https://github.com/xnoah222/Realtek-AirPort-Family/releases/tag/v1.0.1-preview) · [Changes and validation](RELEASE-NOTES-1.0.1.md) · [OpCore Simplify integration](integration/opcore-simplify/README.md)
+
+Includes AirPort_RTW88 **2.0.2** and Realtek88LegacyAirport **1.0.1**. Fixes PCIe capability addressing and AP capability negotiation. CE runtime validation remains pending; this is not a verified fix for every RTL8822CE/RTL8821CE problem. AirDrop remains unsupported. The two root source archives correspond to these preview binaries.
+
 **Realtek AirPort Family** provides native-style AirPort support for selected Realtek PCIe Wi-Fi adapters across multiple generations of macOS.
 
 The project currently includes two drivers:
@@ -135,7 +141,7 @@ Kernel -> Block
 
 # Current Status
 
-Both drivers provide stable core Wi-Fi functionality on their supported macOS versions.
+Both drivers target core Wi-Fi functionality. The latest preview is compiled and software-tested; physical verification of RTL8822CE/RTL8821CE and the full macOS matrix remains pending.
 
 Supported core functionality includes:
 
