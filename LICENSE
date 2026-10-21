@@ -12,6 +12,7 @@ projects:
 
     AirPort_RTW88
     Realtek88LegacyAirport
+    AirPort_RTW89
 
 and any other project that explicitly states that it is covered by this
 License (collectively, the "Covered Projects").
